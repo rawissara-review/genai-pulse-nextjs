@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #0A1535;
+  color: white;
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  overflow-x: hidden;
+}
+
+input, textarea, button, select {
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+}
