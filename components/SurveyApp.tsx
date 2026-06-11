@@ -26,7 +26,7 @@ async function saveResponse(data: FormData) {
     prompt: data.ratings.prompt, teamSupport: data.ratings.teamSupport,
     avgScore: parseFloat(avg.toFixed(2)),
     timeSaved: data.timeSaved, barriers: data.barriers.join('; '),
-    freeText: data.freeText, followUp: data.followUp ? 'ใช่' : 'ไม่',
+    freeText: data.freeText,
   };
   try {
     await fetch('/api/survey', {
