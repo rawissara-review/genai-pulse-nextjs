@@ -81,11 +81,8 @@ export default function ResultsScreen({ formData, onRestart }: Props) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Nav */}
-      <div className="flex items-center justify-between px-8 py-5 border-b border-white/5">
+      <div className="px-8 py-5 border-b border-white/5">
         <SpaceBlueLogo size="sm" />
-        <span className="text-xs text-white/40 tracking-wide hidden sm:block">
-          GenAI Pulse Survey · แผนพัฒนาของคุณ
-        </span>
       </div>
 
       <div className="flex-1 flex justify-center px-4 py-10">
