@@ -9,7 +9,6 @@ export interface FormData {
   timeSaved: string;
   barriers: string[];
   freeText: string;
-  followUp: boolean;
 }
 
 export type StoredResponse = FormData & { id: string; submittedAt: string };
@@ -25,5 +24,4 @@ export const INITIAL_FORM: FormData = {
   timeSaved: '',
   barriers: [],
   freeText: '',
-  followUp: false,
 };
