@@ -8,16 +8,22 @@ const ROLES = [
 ];
 const AI_TOOLS = ['GitHub Copilot', 'M365 Copilot', 'ICA', 'อื่นๆ (ระบุ)', 'ยังไม่มีเลย'];
 
-const glass = 'bg-[rgba(10,21,53,0.8)] border border-[rgba(0,163,255,0.25)] rounded-2xl';
+const glass   = 'bg-[rgba(10,21,53,0.8)] border border-[rgba(0,163,255,0.25)] rounded-2xl';
 const chipOff = 'px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all border border-[rgba(0,163,255,0.2)] text-white/60 bg-[rgba(0,163,255,0.04)] hover:border-[rgba(0,163,255,0.4)] select-none';
 const chipOn  = 'px-3 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all border border-[#00A3FF] text-[#00E5FF] bg-[rgba(0,163,255,0.15)] select-none';
 
 interface Props { formData: FormData; onNext: (d: Partial<FormData>) => void; onBack: () => void; }
 
 export default function Step1({ formData, onNext, onBack }: Props) {
-  const [role, setRole] = useState(formData.role);
-  const [isChampion, setIsChampion] = useState<boolean | null>(formData.isChampion);
-  const [tools, setTools] = useState<string[]>(formData.tools);
+  const [role, setRole]               = useState(formData.role);
+  const [roleOther, setRoleOther]     = useState(
+    ROLES.includes(formData.role) ? '' : formData.role
+  );
+  const [isChampion, setIsChampion]   = useState<boolean | null>(formData.isChampion);
+  const [tools, setTools]             = useState<string[]>(formData.tools);
+  const [toolOther, setToolOther]     = useState('');
+
+  const selectedRole = role === 'อื่นๆ (ระบุ)' ? roleOther.trim() || 'อื่นๆ (ระบุ)' : role;
 
   const toggleTool = (t: string) => {
     if (t === 'ยังไม่มีเลย') { setTools(['ยังไม่มีเลย']); return; }
@@ -27,7 +33,17 @@ export default function Step1({ formData, onNext, onBack }: Props) {
     });
   };
 
-  const canNext = !!role && isChampion !== null && tools.length > 0;
+  // Replace "อื่นๆ (ระบุ)" in tools array with the typed value before saving
+  const resolvedTools = tools.map(t =>
+    t === 'อื่นๆ (ระบุ)' ? (toolOther.trim() || 'อื่นๆ (ระบุ)') : t
+  );
+
+  const canNext =
+    !!role &&
+    (role !== 'อื่นๆ (ระบุ)' || roleOther.trim() !== '') &&
+    isChampion !== null &&
+    tools.length > 0 &&
+    (!tools.includes('อื่นๆ (ระบุ)') || toolOther.trim() !== '');
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,18 +51,30 @@ export default function Step1({ formData, onNext, onBack }: Props) {
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-lg space-y-5">
 
+          {/* Role */}
           <div className={`${glass} p-6`}>
-            <Label>บทบาทหลักของคุณในทีมคืออะไร?</Label>
-            <div className="flex flex-wrap gap-2 mt-4">
+            <p className="text-sm font-semibold text-white mb-4">บทบาทหลักของคุณในทีมคืออะไร?</p>
+            <div className="flex flex-wrap gap-2">
               {ROLES.map(r => (
                 <button key={r} onClick={() => setRole(r)} className={role === r ? chipOn : chipOff}>{r}</button>
               ))}
             </div>
+            {role === 'อื่นๆ (ระบุ)' && (
+              <input
+                autoFocus
+                type="text"
+                value={roleOther}
+                onChange={e => setRoleOther(e.target.value)}
+                placeholder="ระบุบทบาทของคุณ..."
+                className="mt-3 w-full bg-[#0A1535] border border-[rgba(0,163,255,0.4)] rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-white/25 focus:border-[#00A3FF] transition-colors"
+              />
+            )}
           </div>
 
+          {/* AI Advocate */}
           <div className={`${glass} p-6`}>
-            <Label>คุณเป็น AI Advocate ในทีมไหม?</Label>
-            <div className="flex gap-3 mt-4">
+            <p className="text-sm font-semibold text-white mb-4">คุณเป็น AI Advocate ในทีมไหม?</p>
+            <div className="flex gap-3">
               {[{ label: 'ใช่', value: true }, { label: 'ไม่ใช่', value: false }].map(opt => (
                 <button key={String(opt.value)} onClick={() => setIsChampion(opt.value)}
                   className={`flex-1 py-3 rounded-xl text-sm font-semibold border transition-all ${isChampion === opt.value ? 'border-[#00A3FF] text-[#00E5FF] bg-[rgba(0,163,255,0.15)]' : 'border-[rgba(0,163,255,0.2)] text-white/60 hover:border-[rgba(0,163,255,0.4)]'}`}>
@@ -56,24 +84,38 @@ export default function Step1({ formData, onNext, onBack }: Props) {
             </div>
           </div>
 
+          {/* AI Tools */}
           <div className={`${glass} p-6`}>
-            <Label>ตอนนี้คุณเข้าถึง AI tools อะไรได้บ้าง?<span className="text-white/35 font-normal ml-1">(เลือกได้มากกว่า 1)</span></Label>
-            <div className="flex flex-wrap gap-2 mt-4">
+            <p className="text-sm font-semibold text-white mb-4">
+              ตอนนี้คุณเข้าถึง AI tools อะไรได้บ้าง?
+              <span className="text-white/35 font-normal ml-1">(เลือกได้มากกว่า 1)</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
               {AI_TOOLS.map(t => (
                 <button key={t} onClick={() => toggleTool(t)} className={tools.includes(t) ? chipOn : chipOff}>{t}</button>
               ))}
             </div>
+            {tools.includes('อื่นๆ (ระบุ)') && (
+              <input
+                autoFocus
+                type="text"
+                value={toolOther}
+                onChange={e => setToolOther(e.target.value)}
+                placeholder="ระบุ AI tool ที่ใช้..."
+                className="mt-3 w-full bg-[#0A1535] border border-[rgba(0,163,255,0.4)] rounded-xl px-4 py-2.5 text-white text-sm outline-none placeholder:text-white/25 focus:border-[#00A3FF] transition-colors"
+              />
+            )}
           </div>
 
-          <NavButtons onBack={onBack} onNext={() => onNext({ role, isChampion, tools })} canNext={canNext} />
+          <NavButtons
+            onBack={onBack}
+            onNext={() => onNext({ role: selectedRole, isChampion, tools: resolvedTools })}
+            canNext={canNext}
+          />
         </div>
       </div>
     </div>
   );
-}
-
-function Label({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm font-semibold text-white leading-snug">{children}</p>;
 }
 
 function ProgressBar({ step }: { step: number }) {
