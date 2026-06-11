@@ -35,15 +35,14 @@ function parseResponse(row: Record<string, unknown>): StoredResponse {
     timeSaved: String(row.timeSaved || ''),
     barriers: row.barriers ? String(row.barriers).split('; ').filter(Boolean) : [],
     freeText: String(row.freeText || ''),
-    followUp: row.followUp === 'ใช่',
   };
 }
 
 function exportCSV(rows: StoredResponse[]) {
-  const headers = ['เวลา','Email','บทบาท','Advocate','Tools','ความถี่','Prompt/วัน','ความมั่นใจ','ประสิทธิภาพ','Prompt','ทีม','เฉลี่ย','Segment','เวลาที่ประหยัด','อุปสรรค','ความคิดเห็น','Follow Up'];
+  const headers = ['เวลา','Email','บทบาท','Advocate','Tools','ความถี่','Prompt/วัน','ความมั่นใจ','ประสิทธิภาพ','Prompt','ทีม','เฉลี่ย','Segment','เวลาที่ประหยัด','อุปสรรค','ความคิดเห็น'];
   const body = rows.map(r => {
     const avg = (r.ratings.confidence + r.ratings.efficiency + r.ratings.prompt + r.ratings.teamSupport) / 4;
-    return [new Date(r.submittedAt).toLocaleString('th-TH'), r.email, r.role, r.isChampion?'เป็น':'ไม่', r.tools.join(';'), r.frequency, r.promptCount, r.ratings.confidence, r.ratings.efficiency, r.ratings.prompt, r.ratings.teamSupport, avg.toFixed(2), getSegment(avg).label, r.timeSaved, r.barriers.join(';'), r.freeText, r.followUp?'ใช่':'ไม่'];
+    return [new Date(r.submittedAt).toLocaleString('th-TH'), r.email, r.role, r.isChampion?'เป็น':'ไม่', r.tools.join(';'), r.frequency, r.promptCount, r.ratings.confidence, r.ratings.efficiency, r.ratings.prompt, r.ratings.teamSupport, avg.toFixed(2), getSegment(avg).label, r.timeSaved, r.barriers.join(';'), r.freeText];
   });
   const csv = '﻿' + [headers,...body].map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
@@ -55,7 +54,7 @@ function exportCSV(rows: StoredResponse[]) {
 function exportExcel(rows: StoredResponse[]) {
   const data = rows.map(r => {
     const avg = (r.ratings.confidence + r.ratings.efficiency + r.ratings.prompt + r.ratings.teamSupport) / 4;
-    return { 'เวลา': new Date(r.submittedAt).toLocaleString('th-TH'), Email: r.email, บทบาท: r.role, Advocate: r.isChampion?'เป็น':'ไม่', Tools: r.tools.join('; '), ความถี่: r.frequency, 'Prompt/วัน': r.promptCount, ความมั่นใจ: r.ratings.confidence, ประสิทธิภาพ: r.ratings.efficiency, Prompt: r.ratings.prompt, ทีม: r.ratings.teamSupport, เฉลี่ย: parseFloat(avg.toFixed(2)), Segment: getSegment(avg).label, 'เวลาที่ประหยัด': r.timeSaved, อุปสรรค: r.barriers.join('; '), ความคิดเห็น: r.freeText, 'Follow Up': r.followUp?'ใช่':'ไม่' };
+    return { 'เวลา': new Date(r.submittedAt).toLocaleString('th-TH'), Email: r.email, บทบาท: r.role, Advocate: r.isChampion?'เป็น':'ไม่', Tools: r.tools.join('; '), ความถี่: r.frequency, 'Prompt/วัน': r.promptCount, ความมั่นใจ: r.ratings.confidence, ประสิทธิภาพ: r.ratings.efficiency, Prompt: r.ratings.prompt, ทีม: r.ratings.teamSupport, เฉลี่ย: parseFloat(avg.toFixed(2)), Segment: getSegment(avg).label, 'เวลาที่ประหยัด': r.timeSaved, อุปสรรค: r.barriers.join('; '), ความคิดเห็น: r.freeText };
   });
   const ws = XLSX.utils.json_to_sheet(data);
   ws['!cols'] = Object.keys(data[0]||{}).map(()=>({wch:20}));
