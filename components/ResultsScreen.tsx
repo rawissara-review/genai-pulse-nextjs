@@ -47,7 +47,7 @@ const TIP_CARDS = {
   ALL_STRONG: {
     dimension: 'All Strong',
     title: 'คุณพร้อมแล้ว! 🎉',
-    headline: 'ก้าวต่อไปคือการเป็น AI Champion ให้ทีม',
+    headline: 'ก้าวต่อไปคือการเป็น AI Advocate ให้ทีม',
     tips: [
       'ลอง multi-step prompting หรือ AI agents สำหรับงานที่ซับซ้อนขึ้น',
       'สร้าง prompt library ของทีม เพื่อ standardize การใช้งานทั้งองค์กร',
