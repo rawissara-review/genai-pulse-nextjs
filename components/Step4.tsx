@@ -17,7 +17,6 @@ export default function Step4({ formData, onSubmit, onBack }: Props) {
   const [timeSaved, setTimeSaved] = useState(formData.timeSaved);
   const [barriers,  setBarriers]  = useState<string[]>(formData.barriers);
   const [freeText,  setFreeText]  = useState(formData.freeText);
-  const [followUp,  setFollowUp]  = useState(formData.followUp);
 
   const toggleBarrier = (b: string) =>
     setBarriers(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
@@ -56,19 +55,7 @@ export default function Step4({ formData, onSubmit, onBack }: Props) {
               className="w-full bg-[#0A1535] border border-[rgba(0,163,255,0.3)] rounded-xl px-4 py-3 text-white text-sm outline-none resize-none placeholder:text-white/25" />
           </div>
 
-          <div className={`${glass} p-6`}>
-            <p className="text-sm font-semibold text-white mb-4">อยากให้ทีม Core Team contact มา follow-up ไหม?</p>
-            <div className="flex gap-3">
-              {[{ label: 'ใช่', value: true }, { label: 'ไม่ต้องการ', value: false }].map(opt => (
-                <button key={String(opt.value)} onClick={() => setFollowUp(opt.value)}
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold border transition-all ${followUp === opt.value ? 'border-[#00A3FF] text-[#00E5FF] bg-[rgba(0,163,255,0.15)]' : 'border-[rgba(0,163,255,0.2)] text-white/60 hover:border-[rgba(0,163,255,0.4)]'}`}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <NavButtons onBack={onBack} onNext={() => onSubmit({ timeSaved, barriers, freeText, followUp })} canNext={!!timeSaved} />
+          <NavButtons onBack={onBack} onNext={() => onSubmit({ timeSaved, barriers, freeText })} canNext={!!timeSaved} />
         </div>
       </div>
     </div>
