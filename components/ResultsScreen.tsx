@@ -72,55 +72,11 @@ function getSingleCard(r: FormData['ratings']) {
   return TIP_CARDS[key as keyof typeof TIP_CARDS];
 }
 
-// ─── Q&A summary rows (exact questions from Excel) ───────────────────────────
-function buildSummary(f: FormData) {
-  return [
-    {
-      section: 'โปรไฟล์',
-      rows: [
-        { q: 'บทบาทหลักของคุณในทีมคืออะไร?',                        a: f.role || '—' },
-        { q: 'คุณเป็น AI Advocate ในทีมไหม?',                        a: f.isChampion === null ? '—' : f.isChampion ? 'ใช่' : 'ไม่ใช่' },
-        { q: 'ตอนนี้คุณเข้าถึง AI tools อะไรได้บ้าง?',               a: f.tools.length ? f.tools.join(', ') : '—' },
-      ],
-    },
-    {
-      section: 'การใช้งาน',
-      rows: [
-        { q: 'เดือนที่ผ่านมา คุณใช้ AI tools บ่อยแค่ไหน?',           a: f.frequency || '—' },
-        { q: 'วันที่ใช้ AI tools คุณ prompt ไปกี่ครั้งโดยประมาณ?',   a: f.promptCount || '—' },
-      ],
-    },
-    {
-      section: 'คุณค่า & ความพึงพอใจ',
-      rows: [
-        { q: 'ฉันมั่นใจในการใช้ AI tools ได้อย่างมีประสิทธิภาพ',     a: `${f.ratings.confidence}/5`, score: f.ratings.confidence },
-        { q: 'AI tools ช่วยให้ฉันทำงานได้เร็วและดีขึ้น',              a: `${f.ratings.efficiency}/5`, score: f.ratings.efficiency },
-        { q: 'สิ่งที่ฉัน prompt ตรงกับงานจริงที่ทำอยู่',              a: `${f.ratings.prompt}/5`,     score: f.ratings.prompt },
-        { q: 'หัวหน้าและทีมสนับสนุนให้ฉันใช้ AI tools',               a: `${f.ratings.teamSupport}/5`, score: f.ratings.teamSupport },
-      ],
-    },
-    {
-      section: 'เวลาที่ประหยัด',
-      rows: [
-        { q: 'คุณประหยัดเวลาได้กี่ชั่วโมงต่อสัปดาห์?',               a: f.timeSaved || '—' },
-      ],
-    },
-  ];
-}
-
-function scoreColor(s?: number) {
-  if (!s) return 'rgba(255,255,255,0.7)';
-  if (s >= 4) return '#00D68F';
-  if (s >= 3) return '#FFD166';
-  return '#FF4D6A';
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 interface Props { formData: FormData; onRestart: () => void; }
 
 export default function ResultsScreen({ formData, onRestart }: Props) {
-  const card    = getSingleCard(formData.ratings);
-  const summary = buildSummary(formData);
+  const card = getSingleCard(formData.ratings);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -143,7 +99,7 @@ export default function ResultsScreen({ formData, onRestart }: Props) {
             ขอขอบคุณในความร่วมมือ
           </h1>
 
-          {/* ── Single tip card ── */}
+          {/* ── Tip card ── */}
           <div
             className="rounded-2xl p-6"
             style={{ background: 'rgba(8,16,42,0.78)', border: '1px solid rgba(0,163,255,0.22)', backdropFilter: 'blur(12px)' }}
@@ -167,39 +123,6 @@ export default function ResultsScreen({ formData, onRestart }: Props) {
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* ── Q&A summary ── */}
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ background: 'rgba(8,16,42,0.65)', border: '1px solid rgba(0,163,255,0.15)' }}
-          >
-            <div className="px-6 py-4 border-b border-white/5">
-              <p className="text-xs font-semibold tracking-widest uppercase text-[#00A3FF]">สรุปคำตอบของคุณ</p>
-            </div>
-            {summary.map(({ section, rows }) => (
-              <div key={section} className="border-b border-white/5 last:border-0">
-                <div className="px-6 py-2 bg-[rgba(0,163,255,0.05)]">
-                  <p className="text-[11px] font-semibold text-white/40 tracking-wider uppercase">{section}</p>
-                </div>
-                <div className="divide-y divide-white/5">
-                  {rows.map((row) => {
-                    const score = 'score' in row ? row.score : undefined;
-                    return (
-                      <div key={row.q} className="flex items-start justify-between gap-4 px-6 py-3">
-                        <p className="text-xs text-white/55 leading-relaxed flex-1">{row.q}</p>
-                        <p
-                          className="text-xs font-semibold text-right shrink-0 max-w-[45%]"
-                          style={{ color: score !== undefined ? scoreColor(score) : 'rgba(255,255,255,0.8)' }}
-                        >
-                          {row.a}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
           </div>
 
           {/* Restart */}
